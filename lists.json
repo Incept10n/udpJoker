@@ -1,0 +1,21 @@
+{
+    "tech": [
+        {
+            "id": 109282,
+            "link": "https://hehe.com",
+            "desc": "cool clock"
+        }
+    ],
+    "furnit": [
+        {
+            "id": 23230,
+            "link": "https://ozon.com",
+            "desc": "cool lamp"
+        },
+        {
+            "id": 2329380,
+            "link": "https://ozon.com",
+            "desc": "cool table"
+        }
+    ]
+}
