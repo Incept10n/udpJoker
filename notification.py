@@ -5,7 +5,7 @@ import telebot
 from telebot import TeleBot
 from telebot import types
 
-from utils import load_data, load_notifications, parse_time, save_data, save_notifications
+from utils import load_data, load_notifications, parse_time, parse_time_to_datetime, save_data, save_notifications
 
 def new_notification_handler(message, bot: TeleBot):
     markup = types.ForceReply(selective=False)
@@ -81,32 +81,72 @@ def handle_notification_reply(message, bot: TeleBot):
         bot.send_message(message.chat.id, f"❌ Ошибка: {str(e)}")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+def handle_check_notifications(bot_instance : TeleBot):
+    """Проверяет и отправляет уведомления"""
+    while True:
+        try:
+            NOTIFICATIONS_FILE = "notifications.json"
+            # Загружаем актуальные уведомления
+            notifications = load_notifications(NOTIFICATIONS_FILE)
+            now = datetime.now()
+            sent_notifications = []
+            
+            # Проходим по всем пользователям и их уведомлениям
+            for user_id, user_notifications in notifications.items():
+                notifications_to_keep = []
+                
+                for notification in user_notifications:
+                    # Парсим время уведомления
+                    notification_time = parse_time_to_datetime(notification['time'])
+                    
+                    if notification_time:
+                        # Проверяем, настало ли время уведомления (допуск ±1 минута)
+                        time_diff = (now - notification_time).total_seconds()
+                        if -60 <= time_diff <= 60:  # ±1 минута
+                            try:
+                                # Отправляем уведомление
+                                bot_instance.send_message(
+                                    int(user_id), 
+                                    f"⏰ **Уведомление:** {notification['text']}",
+                                    parse_mode='Markdown'
+                                )
+                                sent_notifications.append({
+                                    'user_id': user_id,
+                                    'text': notification['text']
+                                })
+                                # Не добавляем в список для сохранения (удаляем отправленное)
+                                continue
+                            except Exception as e:
+                                print(f"Ошибка отправки уведомления пользователю {user_id}: {e}")
+                                # Если ошибка отправки, оставляем уведомление
+                                notifications_to_keep.append(notification)
+                        else:
+                            # Время еще не настало или уже прошло больше минуты, оставляем уведомление
+                            notifications_to_keep.append(notification)
+                    else:
+                        # Не удалось распарсить время, оставляем как есть
+                        notifications_to_keep.append(notification)
+                
+                # Обновляем список уведомлений пользователя
+                if notifications_to_keep:
+                    notifications[user_id] = notifications_to_keep
+                else:
+                    # Если уведомлений не осталось, удаляем пользователя
+                    if user_id in notifications:
+                        del notifications[user_id]
+            
+            # Сохраняем обновленные уведомления (без отправленных)
+            save_notifications(NOTIFICATIONS_FILE, notifications)
+            
+            # Логируем отправленные уведомления
+            if sent_notifications:
+                print(f"[{now.strftime('%H:%M:%S')}] Отправлено уведомлений: {len(sent_notifications)}")
+                for sent in sent_notifications:
+                    print(f"  - Пользователь {sent['user_id']}: {sent['text']}")
+            
+            # Ждем 30 секунд перед следующей проверкой
+            time.sleep(30)
+            
+        except Exception as e:
+            print(f"Ошибка в проверке уведомлений: {e}")
+            time.sleep(60)  # При ошибке ждем дольше

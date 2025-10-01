@@ -67,14 +67,54 @@ def parse_time(time_str):
     
     return None
 
-
-
-
-
-
-
-
-
-
-
-
+def parse_time_to_datetime(time_str):
+    """Преобразует строку времени в datetime для сравнения"""
+    time_str = time_str.strip().lower()
+    now = datetime.now()
+    
+    try:
+        # Формат "HH:MM"
+        if re.match(r'^\d{1,2}:\d{2}$', time_str):
+            hours, minutes = map(int, time_str.split(':'))
+            target_time = now.replace(hour=hours, minute=minutes, second=0, microsecond=0)
+            if target_time < now:
+                target_time += timedelta(days=1)
+            return target_time
+        
+        # Формат "HH:MM DD.MM"
+        elif re.match(r'^\d{1,2}:\d{2} \d{1,2}\.\d{1,2}$', time_str):
+            time_part, date_part = time_str.split(' ')
+            hours, minutes = map(int, time_part.split(':'))
+            day, month = map(int, date_part.split('.'))
+            year = now.year
+            target_time = datetime(year, month, day, hours, minutes)
+            return target_time
+        
+        # Формат "через X часов"
+        elif "час" in time_str:
+            match = re.search(r'(\d+)\s*час', time_str)
+            if match:
+                hours = int(match.group(1))
+                target_time = now + timedelta(hours=hours)
+                return target_time
+        
+        # Формат "через X минут"
+        elif "минут" in time_str:
+            match = re.search(r'(\d+)\s*минут', time_str)
+            if match:
+                minutes = int(match.group(1))
+                target_time = now + timedelta(minutes=minutes)
+                return target_time
+        
+        # Формат "HH:MM DD.MM.YYYY"
+        elif re.match(r'^\d{1,2}:\d{2} \d{1,2}\.\d{1,2}\.\d{4}$', time_str):
+            time_part, date_part = time_str.split(' ')
+            hours, minutes = map(int, time_part.split(':'))
+            day, month, year = map(int, date_part.split('.'))
+            target_time = datetime(year, month, day, hours, minutes)
+            return target_time
+            
+    except Exception as e:
+        print(f"Ошибка парсинга времени: {e}")
+    
+    return None

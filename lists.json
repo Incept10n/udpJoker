@@ -1,19 +1,2 @@
 {
-  "tech": [
-    {
-      "link": "https://hehe.com",
-      "desc": "cool clock"
-    }
-  ],
-  "furnit": [
-    {
-      "link": "https://ozon.com",
-      "desc": "cool lamp"
-    },
-    {
-      "link": "https://ozon.com",
-      "desc": "cool table"
-    }
-  ],
-  "hehelist": []
 }

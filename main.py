@@ -6,7 +6,7 @@ import threading
 from datetime import datetime, timedelta
 from help import handlel_send_help
 from lists import handle_list_create_command, handle_show_list_callback, handle_show_my_lists
-from notification import handle_notification_reply, new_notification_handler, show_notifications_handler
+from notification import handle_check_notifications, handle_notification_reply, new_notification_handler, show_notifications_handler
 from utils import load_data
 
 
@@ -77,15 +77,15 @@ def show_notifications(message):
     show_notifications_handler(message, bot, notifications)
 
 
-# def check_notifications():
-#     handle_check_notifications(bot)
+def check_notifications():
+    handle_check_notifications(bot)
 
 # Запуск проверки уведомлений в отдельном потоке
-# def start_notification_checker():
-#     thread = threading.Thread(target=check_notifications, daemon=True)
-#     thread.start()
+def start_notification_checker():
+    thread = threading.Thread(target=check_notifications, daemon=True)
+    thread.start()
 
 if __name__ == "__main__":
     print("Бот запущен...")
-    # start_notification_checker()
+    start_notification_checker()
     bot.polling(none_stop=True)
