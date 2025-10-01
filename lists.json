@@ -1,21 +1,19 @@
 {
-    "tech": [
-        {
-            "id": 109282,
-            "link": "https://hehe.com",
-            "desc": "cool clock"
-        }
-    ],
-    "furnit": [
-        {
-            "id": 23230,
-            "link": "https://ozon.com",
-            "desc": "cool lamp"
-        },
-        {
-            "id": 2329380,
-            "link": "https://ozon.com",
-            "desc": "cool table"
-        }
-    ]
+  "tech": [
+    {
+      "link": "https://hehe.com",
+      "desc": "cool clock"
+    }
+  ],
+  "furnit": [
+    {
+      "link": "https://ozon.com",
+      "desc": "cool lamp"
+    },
+    {
+      "link": "https://ozon.com",
+      "desc": "cool table"
+    }
+  ],
+  "hehelist": []
 }

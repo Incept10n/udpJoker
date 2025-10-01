@@ -1,9 +1,12 @@
 {
   "2040883520": [
     {
-      "text": "hehe через 30 секунд",
-      "time": "22.21",
-      "scheduled_time": null
+      "text": "sleep",
+      "time": "00:30"
+    },
+    {
+      "text": "run",
+      "time": "00:28"
     }
   ]
 }

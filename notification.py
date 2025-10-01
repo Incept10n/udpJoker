@@ -3,77 +3,110 @@ import time
 from datetime import datetime, timedelta
 import telebot
 from telebot import TeleBot
+from telebot import types
 
-from utils import load_data, parse_time, save_data
+from utils import load_data, load_notifications, parse_time, save_data, save_notifications
 
-def handle_check_notifications(bot: TeleBot):
-    # Файл для хранения данных
-
-
-    while True:
-        try:
-            current_time = datetime.now()
-            
-            for user_id, user_notifications in notifications.items():
-                notifications_to_remove = []
-                
-                for i, notification in enumerate(user_notifications):
-                    if notification.get('scheduled_time'):
-                        scheduled_time = datetime.fromisoformat(notification['scheduled_time'])
-                        if current_time >= scheduled_time:
-                            try:
-                                bot.send_message(user_id, f"🔔 Напоминание: {notification['text']}")
-                                notifications_to_remove.append(i)
-                            except Exception as e:
-                                print(f"Ошибка отправки уведомления: {e}")
-                                notifications_to_remove.append(i)
-                
-                # Удаляем отправленные уведомления
-                for i in sorted(notifications_to_remove, reverse=True):
-                    user_notifications.pop(i)
-                
-                if notifications_to_remove:
-                    save_data(NOTIFICATIONS_FILE, notifications)
-            
-            time.sleep(60)  # Проверяем каждую минуту
-            
-        except Exception as e:
-            print(f"Ошибка в check_notifications: {e}")
-            time.sleep(60)
+def new_notification_handler(message, bot: TeleBot):
+    markup = types.ForceReply(selective=False)
+    bot.send_message(message.chat.id, 
+                    "⏰ Создание нового уведомления.\n"
+                    "Введите текст уведомления и время в формате:\n"
+                    "`текст уведомления | время`\n\n"
+                    "Примеры времени:\n"
+                    "• `15:30` - сегодня в 15:30\n"
+                    "• `14:25 25.12` - 25 декабря в 14:25\n"
+                    "• `через 2 часа` - через 2 часа\n"
+                    "• `через 30 минут` - через 30 минут", 
+                    parse_mode='Markdown', reply_markup=markup)
 
 
-
-def handle_notification_message(message, bot: TeleBot):
-    NOTIFICATIONS_FILE = 'notifications.json'
-    notifications = load_data(NOTIFICATIONS_FILE)
-
+def show_notifications_handler(message, bot: TeleBot, notifications: dict):
+    NOTIFICATIONS_FILE = "notifications.json"
     user_id = str(message.from_user.id)
     
-    # Проверяем, является ли это ответом на создание уведомления
-    if message.reply_to_message and 'Создание нового уведомления' in message.reply_to_message.text:
-        try:
-            if '|' in message.text:
-                text_part, time_part = message.text.split('|', 1)
-                notification_text = text_part.strip()
-                time_str = time_part.strip()
-                
-                # Простой парсинг времени (можно улучшить)
-                notification_time = parse_time(time_str)
-                
-                if user_id not in notifications:
-                    notifications[user_id] = []
-                
-                notifications[user_id].append({
-                    'text': notification_text,
-                    'time': time_str,
-                    'scheduled_time': notification_time.isoformat() if notification_time else None
-                })
-                save_data(NOTIFICATIONS_FILE, notifications)
-                
-                bot.send_message(message.chat.id, f"✅ Уведомление создано!\n📝 {notification_text}\n⏰ {time_str}")
-                
-            else:
-                bot.send_message(message.chat.id, "❌ Неверный формат. Используйте: `текст | время`", parse_mode='Markdown')
-                
-        except Exception as e:
-            bot.send_message(message.chat.id, f"❌ Ошибка: {str(e)}")
+    # Загружаем актуальные данные
+    notifications = load_notifications(NOTIFICATIONS_FILE)
+    
+    if user_id not in notifications or not notifications[user_id]:
+        bot.send_message(message.chat.id, "🔕 У вас нет активных уведомлений.")
+        return
+    
+    response = "⏰ **Ваши уведомления:**\n\n"
+    for i, notification in enumerate(notifications[user_id], 1):
+        response += f"{i}. {notification['text']} - {notification['time']}\n"
+    
+    bot.send_message(message.chat.id, response, parse_mode='Markdown')
+
+
+def handle_notification_reply(message, bot: TeleBot):
+    NOTIFICATIONS_FILE = "notifications.json"
+    try:
+        user_id = str(message.from_user.id)
+        text = message.text.strip()
+        
+        # Разделяем текст и время
+        if '|' not in text:
+            bot.send_message(message.chat.id, "❌ Используйте формат: `текст | время`", parse_mode='Markdown')
+            return
+        
+        notification_text, time_str = [part.strip() for part in text.split('|', 1)]
+        
+        # Парсим время
+        parsed_time = parse_time(time_str)
+        if not parsed_time:
+            bot.send_message(message.chat.id, "❌ Неверный формат времени. Используйте примеры из инструкции.")
+            return
+        
+        # Загружаем текущие уведомления
+        notifications = load_notifications(NOTIFICATIONS_FILE)
+        
+        # Инициализируем список уведомлений для пользователя
+        if user_id not in notifications:
+            notifications[user_id] = []
+        
+        # Добавляем новое уведомление
+        new_notif = {
+            "text": notification_text,
+            "time": parsed_time
+        }
+        notifications[user_id].append(new_notif)
+        
+        # Сохраняем
+        save_notifications(NOTIFICATIONS_FILE, notifications)
+        
+        bot.send_message(message.chat.id, f"✅ Уведомление создано!\n📝 {notification_text}\n⏰ {parsed_time}")
+        
+    except Exception as e:
+        bot.send_message(message.chat.id, f"❌ Ошибка: {str(e)}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
