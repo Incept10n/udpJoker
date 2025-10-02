@@ -1,9 +1,7 @@
 import telebot
 from telebot import types
-import json
 import os
 import threading
-from datetime import datetime, timedelta
 from help import handlel_send_help
 from lists import handle_list_create_command, handle_show_list_callback, handle_show_my_lists
 from notification import handle_check_notifications, handle_notification_reply, new_notification_handler, show_notifications_handler

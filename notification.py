@@ -1,7 +1,5 @@
-import schedule
 import time
-from datetime import datetime, timedelta
-import telebot
+from datetime import datetime
 from telebot import TeleBot
 from telebot import types
 
