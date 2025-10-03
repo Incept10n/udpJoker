@@ -37,7 +37,7 @@ jobs:
         ansible-inventory -i ansible/inventory.yaml --list --vault-password-file vault_pass.txt
 
     - name: Validate playbook syntax
-      run: ansible-playbook -i ansible/inventory.yaml --syntax-check playbook.yaml --vault-password-file vault_pass.txt
+      run: ansible-playbook -i ansible/inventory.yaml --syntax-check /ansible/main.yaml --vault-password-file vault_pass.txt
 
     - name: Test connection to hosts
       run: |
@@ -46,7 +46,7 @@ jobs:
 
     - name: Run Ansible playbook to install Docker
       run: |
-        ansible-playbook -i ansible/inventory.yaml main.yaml \
+        ansible-playbook -i ansible/inventory.yaml ansible/main.yaml \
           --private-key "${{ secrets.SSH_PRIVATE_KEY }}" --vault-password-file vault_pass.txt \
       env:
         ANSIBLE_HOST_KEY_CHECKING: "False"
