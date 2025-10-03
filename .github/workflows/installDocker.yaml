@@ -26,7 +26,7 @@ jobs:
 
     - name: Make vault pass file
       run: |
-        echo -n "${{ secrets.ANSIBLE_VAULT_PASS }}" > vault-pass.txt
+        echo -n "${{ secrets.ANSIBLE_VAULT_PASS }}" > vault_pass.txt
 
     - name: Validate inventory file
       run: |
