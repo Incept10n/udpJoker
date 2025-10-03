@@ -61,6 +61,7 @@ jobs:
 
     - name: Make vault pass file
       run: |
+        mkdir -p vault_pass.txt
         echo -n "${{ secrets.ANSIBLE_VAULT_PASS }}" > vault_pass.txt
 
     - name: Validate inventory file
@@ -77,7 +78,7 @@ jobs:
     - name: Test connection to hosts
       run: |
         ansible all -i ansible/inventory.yaml -m ping \
-          --private-key "${{ secrets.SSH_PRIVATE_KEY }} --vault-password-file vault_pass.txt"
+          --private-key "${{ secrets.SSH_PRIVATE_KEY }}" --vault-password-file vault_pass.txt
 
     - name: Run Ansible playbook to install Docker
       run: |
