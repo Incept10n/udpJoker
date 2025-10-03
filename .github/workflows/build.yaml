@@ -50,6 +50,10 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+    
+    - name: Fix private key permissions
+      run: |
+        chmod 600 ansible/private_key
 
     - name: Install Ansible
       run: |
