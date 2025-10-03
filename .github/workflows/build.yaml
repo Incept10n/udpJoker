@@ -1,4 +1,4 @@
-name: Build and Push to DockerHub
+name: Build and Push to DockerHub and also intall Docker
 
 on:
   push:
@@ -72,7 +72,7 @@ jobs:
         ansible-inventory -i ansible/inventory.yaml --list --vault-password-file vault_pass.txt
 
     - name: Validate playbook syntax
-      run: ansible-playbook -i ansible/inventory.yaml --syntax-check /ansible/main.ansible.yaml --vault-password-file vault_pass.txt
+      run: ansible-playbook -i ansible/inventory.yaml --syntax-check ansible/main.ansible.yaml --vault-password-file vault_pass.txt
 
     - name: Test connection to hosts
       run: |
