@@ -77,28 +77,22 @@ jobs:
 
     - name: Test connection to hosts
       run: |
-        ansible all -i ansible/inventory.yaml -m ping \
-          --private-key "${{ secrets.SSH_PRIVATE_KEY }}" --vault-password-file vault_pass.txt
+        ansible all -i ansible/inventory.yaml -m ping --vault-password-file vault_pass.txt
 
     - name: Run Ansible playbook to install Docker
       run: |
-        ansible-playbook -i ansible/inventory.yaml ansible/main.ansible.yaml \
-          --private-key "${{ secrets.SSH_PRIVATE_KEY }}" --vault-password-file vault_pass.txt \
+        ansible-playbook -i ansible/inventory.yaml ansible/main.ansible.yaml --vault-password-file vault_pass.txt
       env:
         ANSIBLE_HOST_KEY_CHECKING: "False"
 
     - name: Verify Docker installation
       run: |
-        ansible all -i ansible/inventory.yaml -a "docker --version" --vault-password-file vault_pass.txt \
-          --private-key "${{ secrets.SSH_PRIVATE_KEY }}"
+        ansible all -i ansible/inventory.yaml -a "docker --version" --vault-password-file vault_pass.txt
 
     - name: Verify Docker Compose installation
       run: |
-        ansible all -i ansible/inventory.yaml -a "docker-compose --version" --vault-password-file vault_pass.txt \
-          --private-key "${{ secrets.SSH_PRIVATE_KEY }}"
+        ansible all -i ansible/inventory.yaml -a "docker-compose --version" --vault-password-file vault_pass.txt
 
     - name: Show Docker info
       run: |
-        ansible all -i ansible/inventory.yaml -a "docker info" \
-          --private-key "${{ secrets.SSH_PRIVATE_KEY }}" --vault-password-file vault_pass.txt \
-          | grep -A 10 "Server Version"
+        ansible all -i ansible/inventory.yaml -a "docker info" --vault-password-file vault_pass.txt | grep -A 10 "Server Version"
