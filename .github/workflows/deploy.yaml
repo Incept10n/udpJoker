@@ -6,7 +6,7 @@ on:
     types: [completed]
 
 env:
-  DOCKER_COMPOSE_FILE: ../app/docker-compose.yaml
+  DOCKER_COMPOSE_FILE: docker-compose.yaml
   SSH_USER: ${{ secrets.SSH_USER }}
   SSH_HOST: ${{ secrets.SSH_HOST }}
   SSH_PORT: ${{ secrets.SSH_PORT }}
