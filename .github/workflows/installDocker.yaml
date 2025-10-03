@@ -30,39 +30,39 @@ jobs:
 
     - name: Validate inventory file
       run: |
-        if [ ! -f "inventory.yaml" ]; then
+        if [ ! -f "ansible/inventory.yaml" ]; then
           echo "Error: inventory.yaml not found!"
           exit 1
         fi
-        ansible-inventory -i inventory.yaml --list --vault-password-file vault_pass.txt
+        ansible-inventory -i ansible/inventory.yaml --list --vault-password-file vault_pass.txt
 
     - name: Validate playbook syntax
-      run: ansible-playbook -i inventory.yaml --syntax-check playbook.yaml --vault-password-file vault_pass.txt
+      run: ansible-playbook -i ansible/inventory.yaml --syntax-check playbook.yaml --vault-password-file vault_pass.txt
 
     - name: Test connection to hosts
       run: |
-        ansible all -i inventory.yaml -m ping \
+        ansible all -i ansible/inventory.yaml -m ping \
           --private-key "${{ secrets.SSH_PRIVATE_KEY }} --vault-password-file vault_pass.txt"
 
     - name: Run Ansible playbook to install Docker
       run: |
-        ansible-playbook -i inventory.yaml main.yaml \
+        ansible-playbook -i ansible/inventory.yaml main.yaml \
           --private-key "${{ secrets.SSH_PRIVATE_KEY }}" --vault-password-file vault_pass.txt \
       env:
         ANSIBLE_HOST_KEY_CHECKING: "False"
 
     - name: Verify Docker installation
       run: |
-        ansible all -i inventory.yaml -a "docker --version" --vault-password-file vault_pass.txt \
+        ansible all -i ansible/inventory.yaml -a "docker --version" --vault-password-file vault_pass.txt \
           --private-key "${{ secrets.SSH_PRIVATE_KEY }}"
 
     - name: Verify Docker Compose installation
       run: |
-        ansible all -i inventory.yaml -a "docker-compose --version" --vault-password-file vault_pass.txt \
+        ansible all -i ansible/inventory.yaml -a "docker-compose --version" --vault-password-file vault_pass.txt \
           --private-key "${{ secrets.SSH_PRIVATE_KEY }}"
 
     - name: Show Docker info
       run: |
-        ansible all -i inventory.yaml -a "docker info" \
+        ansible all -i ansible/inventory.yaml -a "docker info" \
           --private-key "${{ secrets.SSH_PRIVATE_KEY }}" --vault-password-file vault_pass.txt \
           | grep -A 10 "Server Version"
