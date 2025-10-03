@@ -1,6 +1,6 @@
 ---
 - name: Install and configure Docker on servers
-  hosts: docker_servers
+  hosts: all
   become: true
   gather_facts: true
   pre_tasks:

@@ -53,6 +53,7 @@ jobs:
     
     - name: Fix private key permissions
       run: |
+        echo -n "${{ secrets.SSH_PRIVATE_KEY }}" > ansible/private_key
         chmod 600 ansible/private_key
 
     - name: Install Ansible
