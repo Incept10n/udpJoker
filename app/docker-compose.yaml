@@ -1,0 +1,7 @@
+version: '3.8'
+
+services:
+  udp-joker:
+    build: .
+    environment:
+      - TELEGRAM_API_TOKEN=

@@ -1,0 +1,33 @@
+---
+- name: Install and configure Docker on servers
+  hosts: docker_servers
+  become: true
+  gather_facts: true
+  pre_tasks:
+    - name: Update package cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+      when: ansible_os_family == "Debian"
+
+  roles:
+    - role: docker
+
+  post_tasks:
+    - name: Verify Docker installation
+      ansible.builtin.command: docker --version
+      register: docker_version
+      changed_when: false
+
+    - name: Display Docker version
+      ansible.builtin.debug:
+        msg: "Docker installed: {{ docker_version.stdout }}"
+
+    - name: Verify Docker Compose installation
+      ansible.builtin.command: docker-compose --version
+      register: docker_compose_version
+      changed_when: false
+
+    - name: Display Docker Compose version
+      ansible.builtin.debug:
+        msg: "Docker Compose installed: {{ docker_compose_version.stdout }}"
