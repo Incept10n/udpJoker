@@ -2,7 +2,7 @@ name: Deploy to Server
 
 on:
   workflow_run:
-    workflows: [Build and Push to DockerHub, Install docker on remoote host]
+    workflows: [Build and Push to DockerHub and also intall Docker]
     types: [completed]
 
 env:

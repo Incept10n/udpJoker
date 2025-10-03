@@ -2,6 +2,6 @@ version: '3.8'
 
 services:
   udp-joker:
-    image: incept1on/udp-joker:master
+    build: .
     env_file:
       - .env
