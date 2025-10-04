@@ -59,13 +59,13 @@ jobs:
     - name: Copy list.json empty file to server
       run: |
         scp -P ${{ secrets.SSH_PORT || '22' }} \
-          ./app/list.json \
+          app/lists.json \
           ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:$DEPLOY_PATH/
 
     - name: Copy notifications.json empty file to server
       run: |
         scp -P ${{ secrets.SSH_PORT || '22' }} \
-          ./app/notifications.json \
+          app/notifications.json \
           ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:$DEPLOY_PATH/
 
     - name: Copy environment files if they exist
