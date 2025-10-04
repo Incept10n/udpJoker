@@ -5,3 +5,6 @@ services:
     image: incept1on/udp-joker:master
     env_file:
       - .env
+    volumes:
+      - ./lists.json:/app/lists.json
+      - ./notifications.json:/app/notifications.json
