@@ -77,11 +77,8 @@ def handle_list_create_command(message, data, bot: TeleBot):
         description = ""
         
         words = params_text.split()
-        if words and (words[0].startswith('http://') or words[0].startswith('https://')):
-            link = words[0]
-            description = ' '.join(words[1:]) if len(words) > 1 else ""
-        else:
-            description = params_text
+        link = words[0]
+        description = ' '.join(words[1:]) if len(words) > 1 else ""
         
         # Создаем новый элемент
         new_item = {}
