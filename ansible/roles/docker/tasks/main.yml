@@ -49,11 +49,9 @@
 
 - name: Add users to docker group
   ansible.builtin.user:
-    name: "{{ item }}"
+    name: "ubuntu"
     groups: docker
     append: true
-  loop: "{{ docker_users }}"
-  when: docker_users is defined
 
 - name: Start and enable Docker service
   ansible.builtin.systemd:
@@ -73,7 +71,7 @@
       }
     dest: /etc/docker/daemon.json
     mode: 0644 # noqa: yaml[octal-values]
-  notify: restart docker
+  notify: Restart docker
 
 - name: Ensure Docker service is running
   ansible.builtin.systemd:
