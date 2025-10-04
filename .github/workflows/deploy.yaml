@@ -4,6 +4,7 @@ on:
   workflow_run:
     workflows: [Build and Push to DockerHub and also intall Docker]
     types: [completed]
+  workflow_dispatch:
 
 env:
   DOCKER_COMPOSE_FILE: docker-compose.yaml
