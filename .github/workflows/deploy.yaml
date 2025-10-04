@@ -24,10 +24,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    
-    - name: Create .env file
-      run: |
-        echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" > .env
 
     - name: Setup SSH
       uses: webfactory/ssh-agent@v0.8.0
@@ -43,6 +39,11 @@ jobs:
       run: |
         ssh -p ${{ secrets.SSH_PORT || '22' }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
           "mkdir -p $DEPLOY_PATH"
+    
+    - name: Create .env file
+      run: |
+        touch .env
+        echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" > $DEPLOY_PATH/.env
 
     - name: Copy docker-compose file to server
       run: |
