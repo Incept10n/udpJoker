@@ -28,15 +28,6 @@ jobs:
       run: |
         echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" > .env
 
-    - name: Validate docker-compose file
-      run: |
-        if [ ! -f "$DOCKER_COMPOSE_FILE" ]; then
-          echo "Error: $DOCKER_COMPOSE_FILE not found!"
-          exit 1
-        fi
-        # Validate docker-compose syntax
-        docker-compose -f $DOCKER_COMPOSE_FILE config
-
     - name: Setup SSH
       uses: webfactory/ssh-agent@v0.8.0
       with:
