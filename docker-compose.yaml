@@ -9,3 +9,5 @@ services:
       - ./lists.json:/app/lists.json
       - ./notifications.json:/app/notifications.json
     restart: on-failure
+    environment:
+      - TZ=Europe/Moscow
