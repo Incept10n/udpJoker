@@ -2,8 +2,9 @@ import time
 from datetime import datetime
 from telebot import TeleBot
 from telebot import types
+import pytz
 
-from utils import load_data, load_notifications, parse_time, parse_time_to_datetime, save_data, save_notifications
+from utils import load_notifications, parse_time, parse_time_to_datetime, save_notifications
 
 def new_notification_handler(message, bot: TeleBot):
     markup = types.ForceReply(selective=False)
@@ -12,12 +13,11 @@ def new_notification_handler(message, bot: TeleBot):
                     "Введите текст уведомления и время в формате:\n"
                     "`текст уведомления | время`\n\n"
                     "Примеры времени:\n"
-                    "• `15:30` - сегодня в 15:30\n"
-                    "• `14:25 25.12` - 25 декабря в 14:25\n"
-                    "• `через 2 часа` - через 2 часа\n"
-                    "• `через 30 минут` - через 30 минут", 
+                    "• `15:30` - сегодня в 15:30 (МСК)\n"
+                    "• `14:25 25.12` - 25 декабря в 14:25 (МСК)\n"
+                    "• `через 2 часа` - через 2 часа (МСК)\n"
+                    "• `через 30 минут` - через 30 минут (МСК)", 
                     parse_mode='Markdown', reply_markup=markup)
-
 
 def show_notifications_handler(message, bot: TeleBot, notifications: dict):
     NOTIFICATIONS_FILE = "notifications.json"
@@ -79,14 +79,16 @@ def handle_notification_reply(message, bot: TeleBot):
         bot.send_message(message.chat.id, f"❌ Ошибка: {str(e)}")
 
 
-def handle_check_notifications(bot_instance : TeleBot):
+def handle_check_notifications(bot_instance: TeleBot):
     """Проверяет и отправляет уведомления"""
+    moscow_tz = pytz.timezone('Europe/Moscow')  # Define Moscow timezone
+
     while True:
         try:
             NOTIFICATIONS_FILE = "notifications.json"
             # Загружаем актуальные уведомления
             notifications = load_notifications(NOTIFICATIONS_FILE)
-            now = datetime.now()
+            now = datetime.now(moscow_tz)  # Use Moscow time
             sent_notifications = []
             
             # Проходим по всем пользователям и их уведомлениям
@@ -94,8 +96,8 @@ def handle_check_notifications(bot_instance : TeleBot):
                 notifications_to_keep = []
                 
                 for notification in user_notifications:
-                    # Парсим время уведомления
-                    notification_time = parse_time_to_datetime(notification['time'])
+                    # Парсим время уведомления с учетом Московского времени
+                    notification_time = parse_time_to_datetime(notification['time'], moscow_tz)
                     
                     if notification_time:
                         # Проверяем, настало ли время уведомления (допуск ±1 минута)
@@ -138,7 +140,7 @@ def handle_check_notifications(bot_instance : TeleBot):
             
             # Логируем отправленные уведомления
             if sent_notifications:
-                print(f"[{now.strftime('%H:%M:%S')}] Отправлено уведомлений: {len(sent_notifications)}")
+                print(f"[{now.strftime('%H:%M:%S')} МСК] Отправлено уведомлений: {len(sent_notifications)}")
                 for sent in sent_notifications:
                     print(f"  - Пользователь {sent['user_id']}: {sent['text']}")
             

@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import os
 import json
 import re
+import pytz
 
 # Загрузка данных
 def load_data(filename):
@@ -27,10 +28,13 @@ def save_notifications(filename, data):
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
-
-def parse_time(time_str):
+def parse_time(time_str, timezone=None):
+    """Парсит время с учетом временной зоны (по умолчанию Москва)"""
+    if timezone is None:
+        timezone = pytz.timezone('Europe/Moscow')
+    
     time_str = time_str.strip().lower()
-    now = datetime.now()
+    now = datetime.now(timezone)  # Use timezone-aware datetime
     
     # Формат "15:30"
     if re.match(r'^\d{1,2}:\d{2}$', time_str):
@@ -46,7 +50,7 @@ def parse_time(time_str):
         hours, minutes = map(int, time_part.split(':'))
         day, month = map(int, date_part.split('.'))
         year = now.year
-        target_time = datetime(year, month, day, hours, minutes)
+        target_time = timezone.localize(datetime(year, month, day, hours, minutes))
         return target_time.strftime("%H:%M %d.%m")
     
     # Формат "через X часов"
@@ -67,10 +71,13 @@ def parse_time(time_str):
     
     return None
 
-def parse_time_to_datetime(time_str):
-    """Преобразует строку времени в datetime для сравнения"""
+def parse_time_to_datetime(time_str, timezone=None):
+    """Преобразует строку времени в datetime с учетом временной зоны (по умолчанию Москва)"""
+    if timezone is None:
+        timezone = pytz.timezone('Europe/Moscow')
+    
     time_str = time_str.strip().lower()
-    now = datetime.now()
+    now = datetime.now(timezone)  # Use timezone-aware datetime
     
     try:
         # Формат "HH:MM"
@@ -87,7 +94,7 @@ def parse_time_to_datetime(time_str):
             hours, minutes = map(int, time_part.split(':'))
             day, month = map(int, date_part.split('.'))
             year = now.year
-            target_time = datetime(year, month, day, hours, minutes)
+            target_time = timezone.localize(datetime(year, month, day, hours, minutes))
             return target_time
         
         # Формат "через X часов"
@@ -111,7 +118,7 @@ def parse_time_to_datetime(time_str):
             time_part, date_part = time_str.split(' ')
             hours, minutes = map(int, time_part.split(':'))
             day, month, year = map(int, date_part.split('.'))
-            target_time = datetime(year, month, day, hours, minutes)
+            target_time = timezone.localize(datetime(year, month, day, hours, minutes))
             return target_time
             
     except Exception as e:
