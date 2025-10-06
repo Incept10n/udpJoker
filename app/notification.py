@@ -38,14 +38,22 @@ def show_notifications_handler(message, bot: TeleBot, notifications: dict):
 
 
 def handle_notification_reply(message, bot: TeleBot):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    btn1 = types.KeyboardButton('/help')
+    btn2 = types.KeyboardButton('/mylists')
+    btn3 = types.KeyboardButton('/newnotification')
+    btn4 = types.KeyboardButton('/mynotifications')
+    markup.add(btn1, btn2, btn3, btn4)
+
     NOTIFICATIONS_FILE = "notifications.json"
+
     try:
         user_id = str(message.from_user.id)
         text = message.text.strip()
         
         # Разделяем текст и время
         if '|' not in text:
-            bot.send_message(message.chat.id, "❌ Используйте формат: `текст | время`", parse_mode='Markdown')
+            bot.send_message(message.chat.id, "❌ Используйте формат: `текст | время`", parse_mode='Markdown', reply_markup=markup)
             return
         
         notification_text, time_str = [part.strip() for part in text.split('|', 1)]
@@ -53,7 +61,7 @@ def handle_notification_reply(message, bot: TeleBot):
         # Парсим время
         parsed_time = parse_time(time_str)
         if not parsed_time:
-            bot.send_message(message.chat.id, "❌ Неверный формат времени. Используйте примеры из инструкции.")
+            bot.send_message(message.chat.id, "❌ Неверный формат времени. Используйте примеры из инструкции.", reply_markup=markup)
             return
         
         # Загружаем текущие уведомления
@@ -73,10 +81,10 @@ def handle_notification_reply(message, bot: TeleBot):
         # Сохраняем
         save_notifications(NOTIFICATIONS_FILE, notifications)
         
-        bot.send_message(message.chat.id, f"✅ Уведомление создано!\n📝 {notification_text}\n⏰ {parsed_time}")
+        bot.send_message(message.chat.id, f"✅ Уведомление создано!\n📝 {notification_text}\n⏰ {parsed_time}", reply_markup=markup)
         
     except Exception as e:
-        bot.send_message(message.chat.id, f"❌ Ошибка: {str(e)}")
+        bot.send_message(message.chat.id, f"❌ Ошибка: {str(e)}", reply_markup=markup)
 
 
 def handle_check_notifications(bot_instance: TeleBot):
