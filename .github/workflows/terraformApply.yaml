@@ -42,6 +42,8 @@ jobs:
         export YC_TOKEN=$(yc iam create-token --impersonate-service-account-id "${{ secrets.TERRAFORM_SERVICE_ACC_ID }}")
         export YC_CLOUD_ID=$(yc config get cloud-id)
         export YC_FOLDER_ID=$(yc config get folder-id)
+        export ACCESS_KEY="${{ secrets.YC_ACCESS_KEY }}"
+        export SECRET_KEY="${{ secrets.YC_SECRET_KEY }}"
         
     - name: Terraform Format
       id: fmt
