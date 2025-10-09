@@ -1,0 +1,1 @@
+If u change cloud vm's for consistency firstly push terraform changes, wait for CI/CD and then only push code that builds and deploy the project (it works anyway, but for consistency it is better to do as was said)
