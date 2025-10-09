@@ -12,9 +12,9 @@ resource "yandex_compute_instance" "upd-joker-vm" {
   platform_id = "standard-v3"
 
   resources {
-    cores         = 1
+    cores         = 2
     memory        = 1
-    core_fraction = 50
+    core_fraction = 25
   }
 
   boot_disk {
