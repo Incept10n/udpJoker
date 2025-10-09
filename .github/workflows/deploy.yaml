@@ -37,18 +37,18 @@ jobs:
     
     - name: Create lists.json if not exists
       run: |
-        if [ ! -f "lists.json" ]; then
-          echo '{}' > lists.json
-          echo "Created lists.json"
+        if [ ! -f "./lists.json" ]; then
+          echo '{}' > ./lists.json
+          echo "Created ./lists.json"
         else
           echo "lists.json already exists"
         fi
         
-    - name: Create notifications.json if not exists
+    - name: Create ./notifications.json if not exists
       run: |
-        if [ ! -f "notifications.json" ]; then
-          echo '{}' > notifications.json
-          echo "Created notifications.json"
+        if [ ! -f "./notifications.json" ]; then
+          echo '{}' > ./notifications.json
+          echo "Created ./notifications.json"
         else
           echo "notifications.json already exists"
         fi
