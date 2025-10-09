@@ -2,15 +2,15 @@ resource "yandex_backup_policy" "udp-joker-backup-policy" {
   name = "udp-joker-weekly-backup"
 
   scheduling {
-    enabled = true
-    scheme  = "ALWAYS_INCREMENTAL"
-    weekly_backup_day = "MONDAY" 
-    
+    enabled           = true
+    scheme            = "ALWAYS_INCREMENTAL"
+    weekly_backup_day = "MONDAY"
+
     backup_sets {
       execute_by_time {
         type      = "WEEKLY"
-        weekdays  = ["MONDAY"] 
-        repeat_at = ["02:00"] 
+        weekdays  = ["MONDAY"]
+        repeat_at = ["02:00"]
       }
       type = "TYPE_AUTO"
     }
@@ -18,9 +18,9 @@ resource "yandex_backup_policy" "udp-joker-backup-policy" {
 
   retention {
     after_backup = true
-    
+
     rules {
-      max_count = 2 
+      max_count     = 2
       repeat_period = ["WEEKLY"]
     }
   }
