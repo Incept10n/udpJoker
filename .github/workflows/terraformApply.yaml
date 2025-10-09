@@ -41,15 +41,17 @@ jobs:
         curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
         source "/home/runner/.bashrc"
 
+    - name: Validate yc installation
+      run: |
+        yc version
+
     - name: Configure Yandex Cloud credentials
       run: |
-        yc config profile create default  # имя профиля передается как аргумент
-
+        yc config profile create newprofile 
         yc config set oauth-token $YC_TOKEN
         yc config set cloud-id $YC_CLOUD_ID
         yc config set folder-id $YC_FOLDER_ID
         yc config set compute-default-zone $YC_ZONE
-
         export YC_TOKEN=$(yc iam create-token --impersonate-service-account-id "${{ secrets.TERRAFORM_SERVICE_ACC_ID }}")
         export YC_CLOUD_ID=$(yc config get cloud-id)
         export YC_FOLDER_ID=$(yc config get folder-id)
