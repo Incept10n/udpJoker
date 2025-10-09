@@ -74,23 +74,25 @@ jobs:
     
     - name: Create lists.json if not exists
       run: |
-        if [ ! -f "$DEPLOY_PATH/lists.json" ]; then
+        ssh -p ${{ secrets.SSH_PORT || '22' }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+        "if [ ! -f "$DEPLOY_PATH/lists.json" ]; then
           touch $DEPLOY_PATH/lists.json
           echo '{}' > $DEPLOY_PATH/lists.json
           echo "Created $DEPLOY_PATH/lists.json"
         else
           echo "lists.json already exists"
-        fi
+        fi"
         
     - name: Create notifications.json if not exists
       run: |
-        if [ ! -f "$DEPLOY_PATH/notifications.json" ]; then
+        ssh -p ${{ secrets.SSH_PORT || '22' }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+        "if [ ! -f "$DEPLOY_PATH/notifications.json" ]; then
           touch $DEPLOY_PATH/notifications.json
           echo '{}' > $DEPLOY_PATH/notifications.json
           echo "Created $DEPLOY_PATH/notifications.json"
         else
           echo "notifications.json already exists"
-        fi
+        fi"
 
     - name: Deploy application
       run: |
