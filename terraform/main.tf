@@ -14,7 +14,7 @@ resource "yandex_compute_instance" "upd-joker-vm" {
   resources {
     cores         = 2
     memory        = 1
-    core_fraction = 25
+    core_fraction = 20
   }
 
   boot_disk {
