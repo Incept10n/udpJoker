@@ -68,7 +68,7 @@ jobs:
     
     - name: Create file with ssh private key
       run: |
-        mkdir -p .ssh
+        mkdir -p ${HOME}/.ssh
         touch ${HOME}/.ssh/id_ed25519.pub
         echo -n "${{ secrets.SSH_PRIVATE_KEY }}" > ${HOME}/.ssh/id_ed25519.pub
 
