@@ -35,28 +35,29 @@ jobs:
       uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: ${{ env.TF_VERSION }}
+    
+    - name: Validate Terraform installation
+      run: |
+        terraform version
 
     - name: Install Yandex Cloud CLI
       run: |
-        curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i /usr/local/bin -n
-        echo "/usr/local/bin" >> $GITHUB_PATH
-        export PATH="/usr/local/bin:$PATH"
+        curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash 
 
     - name: Validate yc installation
       run: |
-        export PATH="/usr/local/bin:$PATH"
-        yc version
+        ${HOME}/yandex-cloud/bin/yc version
 
     - name: Configure Yandex Cloud credentials
       run: |
         export PATH="/usr/local/bin:$PATH"
-        yc config profile create default
-        yc config set token $YC_TOKEN
-        yc config set cloud-id $YC_CLOUD_ID
-        yc config set folder-id $YC_FOLDER_ID
-        yc config set compute-default-zone $YC_ZONE
+        ${HOME}/yandex-cloud/bin/yc config profile create default
+        ${HOME}/yandex-cloud/bin/yc config set token $YC_TOKEN
+        ${HOME}/yandex-cloud/bin/yc config set cloud-id $YC_CLOUD_ID
+        ${HOME}/yandex-cloud/bin/yc config set folder-id $YC_FOLDER_ID
+        ${HOME}/yandex-cloud/bin/yc config set compute-default-zone $YC_ZONE
         
-        yc config list
+        ${HOME}/yandex-cloud/bin/yc config list
         
     - name: Terraform Format
       id: fmt
