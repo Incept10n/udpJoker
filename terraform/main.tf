@@ -2,7 +2,7 @@ resource "yandex_compute_disk" "udp-joker-disk" {
   name     = "udp-joker-disk"
   type     = "network-hdd"
   zone     = "ru-central1-b"
-  size     = "10"
+  size     = "15"
   image_id = "fd837neerofcjnk6sksg"
 }
 
@@ -14,7 +14,7 @@ resource "yandex_compute_instance" "upd-joker-vm" {
   resources {
     cores         = 2
     memory        = 1
-    core_fraction = 20
+    core_fraction = 50
   }
 
   boot_disk {
