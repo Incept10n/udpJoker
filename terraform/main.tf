@@ -29,6 +29,8 @@ resource "yandex_compute_instance" "upd-joker-vm" {
   metadata = {
     ssh-keys = "udp-joker:${file("~/.ssh/id_ed25519.pub")}"
   }
+
+  allow_stopping_for_update = true
 }
 
 
