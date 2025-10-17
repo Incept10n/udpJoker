@@ -89,30 +89,28 @@ def handle_notification_reply(message, bot: TeleBot):
 
 def handle_check_notifications(bot_instance: TeleBot):
     """Проверяет и отправляет уведомления"""
-    moscow_tz = pytz.timezone('Europe/Moscow')  # Define Moscow timezone
+    moscow_tz = pytz.timezone('Europe/Moscow')
 
     while True:
         try:
             NOTIFICATIONS_FILE = "notifications.json"
-            # Загружаем актуальные уведомления
             notifications = load_notifications(NOTIFICATIONS_FILE)
-            now = datetime.now(moscow_tz)  # Use Moscow time
+            now = datetime.now(moscow_tz)
             sent_notifications = []
             
-            # Проходим по всем пользователям и их уведомлениям
+            # Create a new dictionary for updated notifications
+            updated_notifications = {}
+            
             for user_id, user_notifications in notifications.items():
                 notifications_to_keep = []
                 
                 for notification in user_notifications:
-                    # Парсим время уведомления с учетом Московского времени
                     notification_time = parse_time_to_datetime(notification['time'], moscow_tz)
                     
                     if notification_time:
-                        # Проверяем, настало ли время уведомления (допуск ±1 минута)
                         time_diff = (now - notification_time).total_seconds()
-                        if -60 <= time_diff <= 60:  # ±1 минута
+                        if -30 <= time_diff <= 30:
                             try:
-                                # Отправляем уведомление
                                 bot_instance.send_message(
                                     int(user_id), 
                                     f"⏰ **Уведомление:** {notification['text']}",
@@ -122,39 +120,30 @@ def handle_check_notifications(bot_instance: TeleBot):
                                     'user_id': user_id,
                                     'text': notification['text']
                                 })
-                                # Не добавляем в список для сохранения (удаляем отправленное)
                                 continue
                             except Exception as e:
                                 print(f"Ошибка отправки уведомления пользователю {user_id}: {e}")
-                                # Если ошибка отправки, оставляем уведомление
                                 notifications_to_keep.append(notification)
                         else:
-                            # Время еще не настало или уже прошло больше минуты, оставляем уведомление
                             notifications_to_keep.append(notification)
                     else:
-                        # Не удалось распарсить время, оставляем как есть
                         notifications_to_keep.append(notification)
                 
-                # Обновляем список уведомлений пользователя
+                # Only keep users who still have notifications
                 if notifications_to_keep:
-                    notifications[user_id] = notifications_to_keep
-                else:
-                    # Если уведомлений не осталось, удаляем пользователя
-                    if user_id in notifications:
-                        del notifications[user_id]
+                    updated_notifications[user_id] = notifications_to_keep
             
-            # Сохраняем обновленные уведомления (без отправленных)
+            # Replace the old notifications with the updated ones
+            notifications = updated_notifications
             save_notifications(NOTIFICATIONS_FILE, notifications)
             
-            # Логируем отправленные уведомления
             if sent_notifications:
                 print(f"[{now.strftime('%H:%M:%S')} МСК] Отправлено уведомлений: {len(sent_notifications)}")
                 for sent in sent_notifications:
                     print(f"  - Пользователь {sent['user_id']}: {sent['text']}")
             
-            # Ждем 30 секунд перед следующей проверкой
-            time.sleep(30)
+            time.sleep(15)
             
         except Exception as e:
             print(f"Ошибка в проверке уведомлений: {e}")
-            time.sleep(60)  # При ошибке ждем дольше
+            time.sleep(60)
