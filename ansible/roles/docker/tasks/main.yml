@@ -49,7 +49,7 @@
 
 - name: Add users to docker group
   ansible.builtin.user:
-    name: "ubuntu"
+    name: "udp-joker"
     groups: docker
     append: true
 
