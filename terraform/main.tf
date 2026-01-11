@@ -27,7 +27,8 @@ resource "yandex_compute_instance" "upd-joker-vm" {
   }
 
   metadata = {
-    ssh-keys = "udp-joker:${file("~/.ssh/id_ed25519.pub")}"
+    ssh-keys = "udp-joker:${file("~/.ssh/id_ed25519.pub")}",
+    user-data = "#cloud-config\nusers:\n  - name: udp-joker\n    shell: /bin/bash\n    sudo: 'ALL=(ALL) NOPASSWD:ALL'\n    ssh_authorized_keys:\n      - ${file("~/.ssh/id_ed25519.pub")}"
   }
 
   allow_stopping_for_update = true
